@@ -1,0 +1,100 @@
+
+
+MongoDB Assignment Questions
+This document contains practical MongoDB assignment questions based on two real-world
+scenarios. Each assignment encourages applying CRUD operations, complex queries,
+sorting, and indexing.
+Scenario 1: Library Management System
+You are designing a MongoDB database to manage a library’s book inventory and borrowing
+records. The database must store book details such as title, author, publication year, genre,
+and availability.
+Assignment Tasks
+1. Create a database named `libraryDB` and a collection named `books`.
+use libraryDB
+db.createCollection("books")
+2. Insert at least 5 book documents with fields: title, author, year, genre (array), and
+available (boolean).
+db.books.insertMany([
+  { title: "Java Programming", author: "James Gosling", year: 2012, genre: ["Programming", "Education"], available: true },
+  { title: "Node.js Guide", author: "Ryan Dahl", year: 2018, genre: ["Programming", "Web Development"], available: true },
+  { title: "AI Revolution", author: "Andrew Ng", year: 2021, genre: ["Science", "Technology"], available: true },
+  { title: "Networking Basics", author: "Tanmay Bakshi", year: 2016, genre: ["Networking", "Education"], available: false },
+  { title: "Space Exploration", author: "Carl Sagan", year: 2022, genre: ["Science"], available: true }
+])
+
+3. Write a query to find all books published after 2015.
+db.books.find({year:{$gt:2015}});
+4. Retrieve only the `title` and `author` of books where `available` is true.
+db.books.find({ available: true }, 
+{ title: 1, author: 1, _id: 0 })
+5. Update the availability of a specific book to false when it is borrowed.
+db.books.updateOne({ title: "Java Programming" }, { $set: { available: false } })
+
+6. Delete books of a particular genre (e.g., 'Magazine').
+db.books.deleteMany({ genre: "Magazine" })
+
+7. Find books where genre contains 'Science' or publication year is greater than 2020.
+db.books.find({
+  $or: [
+    { genre: "Science" },
+    { year: { $gt: 2020 } }
+  ]
+})
+
+8. Sort the books by publication year in descending order.
+db.books.find().sort({ year: -1 })
+
+9. Create an index on the `author` field .
+db.books.createIndex({ author: 1 })
+Scenario 2: E-commerce Product Catalog
+You are tasked to manage an e-commerce platform's product catalog using MongoDB.
+Products can have varying attributes such as name, category, price, stock quantity, and
+ratings.
+Assignment Tasks
+1. Create a database named `ecommerceDB` and a collection named `products`.
+use ecommerceDB
+db.createCollection("products")
+2. Insert at least 6 product documents with fields: name, category, price, stock, and ratings
+(array of numbers).
+db.products.insertMany([
+  { name: "hp", category: "lap", price: 25000, stock: 250, ratings: [9.5, 8.0, 9.0] },
+  { name: "mobiles", category: "lap", price: 7000, stock: 0, ratings: [9.5, 7.5] },
+  { name: "mobiles", category: "electronics", price: 25000, stock: 15, ratings: [2.5, 3.0] },
+  { name: "lenovo", category: "electronics", price: 25000, stock: 100, ratings: [9.5, 8.5] },
+  { name: "lenovo", category: "lap", price: 77000, stock: 100, ratings: [6.5, 7.0] },
+  { name: "dell", category: "lap", price: 55000, stock: 10, ratings: [4.5, 5.0] }
+])
+3. Write a query to find all products with a price greater than 1000 and stock less than 20.
+db.products.find({ price: { $gt: 1000 }, stock: { $lt: 20 } })
+
+4. Retrieve only the name and price of products in the category 'Electronics'.
+db.products.find(
+  { category: "electronics" },
+  { name: 1, price: 1, _id: 0 }
+)
+5. Update the stock of a product after a purchase by reducing it by a given quantity.
+db.products.updateOne(
+  { name: "hp" },
+  { $inc: { stock: -5 } }
+)
+
+6. Delete products with no ratings or where stock equals zero.
+{ ratings: { $exists: false } } or { ratings: { $size: 0 } }
+db.products.deleteMany({
+  $or: [
+    { ratings: { $size: 0 } },
+    { stock: 0 }
+  ]
+})
+
+7. Find products where the average rating is greater than or equal to 4.5.
+db.products.aggregate([
+  { $addFields: { avgRating: { $avg: "$ratings" } } },
+  { $match: { avgRating: { $gte: 4.5 } } }
+])
+8. Sort products by price in ascending order and limit the result to the top 3 cheapest
+products
+db.products.find().sort({ price: 1 }).limit(3)
+9. Create a index on `category` .
+db.products.createIndex({ category: 1 })
+
