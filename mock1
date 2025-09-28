@@ -1,0 +1,133 @@
+db.students.insertMany([
+  { "_id": 1, "name": "Alice", "age": 20, "course": "CS", "marks": 90, "skills": ["Java", "Python"] },
+  { "_id": 2, "name": "Bob", "age": 21, "course": "Math", "marks": 80, "skills": ["C++", "JavaScript"] },
+  { "_id": 3, "name": "Charlie", "age": 22, "course": "CS", "marks": 70, "skills": ["Python", "C"] },
+  { "_id": 4, "name": "David", "age": 20, "course": "Physics", "marks": 85, "skills": ["Java", "C++"] },
+  { "_id": 5, "name": "Eve", "age": 23, "course": "Math", "marks": 95, "skills": ["JavaScript", "Python"] }
+])
+
+
+db.students.insertMany([
+{_id:1,name:"alice",age:20,course:"cs",marks:90,skills:["java","python"]},{_id:2,name:"bob",age:21,course:"math",marks:80,skills:["c++","javascript"]},{_id:3,name:"charli",age:22,course:"cs",marks:70,skills:["python","c"]},{_id:4,name:"david",age:20,course:"physics",marks:85,skills:["java","c++"]},{_id:5,name:"eve",age:23,course:"math",marks:95,skills:["javascript","pyhton"]}
+])
+
+Questions
+A. Basic Queries
+
+Display all students.
+db.students.find();
+==============================================
+Find all students with age = 20.
+db.students.find({age:20});
+=====================================================
+Find students who study CS and have marks greater than 75.
+db.students.find({course:"cs",marks:{$gt:75}});
+=============================================
+Show only name and course fields of students, hiding _id.
+db.students.find({},{name:1,course:1,_id:0});
+=========================================
+Sort students by marks in descending order.
+db.students.find().sort({marks:-1});
+===================================
+Get the top 2 students with highest marks.
+db.students.find().sort({marks:-1}).limit(2);
+
+==========================================
+B. Update & Delete
+
+Increase marks of all CS students by 5.
+
+db.students.updateMany({course:"cs"},{$inc:{marks:5}});
+================================
+
+Update Bob’s course to "Computer Science".
+db.students.updateOne({name:"bob"},{$set:{course:"Computer Science"}});
+=============================================
+Delete the student with name = "Charlie".
+db.students.deleteOne({name:"charli"});
+================================================
+Delete all students with marks < 75.
+db.students.deleteMany({marks:{$gt:75}});
+=================================================
+C. Advanced Queries
+
+Find students whose course is CS OR Math.
+db.students.find({$or:[{course:"cs"},{course:"math"}]});
+================================
+
+Find students with age = 20 AND marks >= 85.
+db.students.find({age:20,marks:{$gte:85}});
+==================================================
+
+Find students who have "Java" in their skills.
+db.students.find({skills:"java"});
+=================================================================
+
+Find students who have both "Java" and "Python" in their skills.
+db.students.find({skills:"java",skills:"pyhton"})
+
+db.students.find({skills:{$all:["java","python"]}});
+
+===================================================
+
+Find students with exactly 2 skills.
+db.students.findMany({skills:{$size:2}})
+========================================================
+D. Aggregation
+
+Group students by course and find the average marks.
+db.students.aggregate([
+  {$group:{_id:"$course",avgMarks:{$avg:"$marks"}}}
+]);
+=======================================================
+
+Find the highest marks in each course.
+db.students.aggregate([
+  {$group:{_id:"$course",maxMarks:{$max:"$marks"}}}
+]);
+===================================================================
+
+Count how many students are in each course.
+db.students.aggregate([
+  {$group:{_id:"$course",count:{$sum:1}}}
+]);
+================================================================================
+
+Show the total marks scored by all students in each course, sorted descending.
+
+db.students.aggregate([
+  {$group:{_id:"$course",totalMarks:{$sum:"$marks"}}},
+  {$sort:{totalMarks:-1}}
+]);
+
+==================================================================
+
+Find the average marks of CS students only.
+db.students.aggregate([
+  {$match:{course:"cs"}},
+  {$group:{_id:"$course",avgMarks:{$avg:"$marks"}}}
+]);
+====================================================================
+
+E. Indexing & Search
+============================================================================
+
+Create an index on name.
+db.students.createIndex({name:1});
+
+===================================================================================
+
+Enable text search on name and search for "Alice".
+db.students.createIndex({name:"text"});
+db.students.find({$text:{$search:"alice"}});
+
+==============================================
+
+Find distinct values of course.
+db.students.distinct("course");
+
+=================================================================
+
+Count how many students are age = 20.
+db.students.countDocuments({age:20})
+===========================================
